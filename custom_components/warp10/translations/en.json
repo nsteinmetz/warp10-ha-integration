@@ -1,0 +1,38 @@
+{
+  "config": {
+    "step": {
+      "user": {
+        "title": "Connect to Warp 10",
+        "description": "Enter the URL of your Warp 10 instance and a write token.",
+        "data": {
+          "url": "Warp 10 URL",
+          "write_token": "Write token"
+        }
+      }
+    },
+    "error": {
+      "cannot_connect": "Failed to connect to the Warp 10 instance.",
+      "invalid_auth": "The write token was rejected.",
+      "unknown": "Unexpected error."
+    },
+    "abort": {
+      "already_configured": "This Warp 10 instance is already configured."
+    }
+  },
+  "options": {
+    "step": {
+      "init": {
+        "title": "Warp 10 options",
+        "data": {
+          "include_entities": "Entities to include (comma-separated, empty = all)",
+          "exclude_entities": "Entities to exclude (comma-separated)",
+          "class_prefix": "GTS class name prefix",
+          "batch_interval": "Batch flush interval (seconds)",
+          "ingest_numeric": "Ingest numeric states",
+          "ingest_boolean": "Ingest boolean states (on/off, true/false)",
+          "ingest_string": "Ingest free-text states"
+        }
+      }
+    }
+  }
+}
