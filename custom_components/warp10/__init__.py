@@ -162,7 +162,7 @@ class Warp10Client:
         ts_micros = int(new_state.last_updated.timestamp() * 1_000_000)
         class_name = f"{self.class_prefix}.{entity_id}"
 
-        labels = {"entity_id": entity_id}
+        labels: dict[str, str] = {}
         area_id = self._area_id_for_entity(entity_id)
         if area_id:
             labels["area_id"] = area_id
