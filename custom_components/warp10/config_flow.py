@@ -28,6 +28,7 @@ from .const import (
     DEFAULT_INGEST_NUMERIC,
     DEFAULT_INGEST_STRING,
     DEFAULT_TIMEOUT,
+    DEFAULT_URL,
     DOMAIN,
 )
 
@@ -35,7 +36,7 @@ _LOGGER = logging.getLogger(__name__)
 
 STEP_USER_SCHEMA = vol.Schema(
     {
-        vol.Required(CONF_URL, default="http://localhost:8080"): str,
+        vol.Required(CONF_URL, default=DEFAULT_URL): str,
         vol.Required(CONF_WRITE_TOKEN): str,
     }
 )

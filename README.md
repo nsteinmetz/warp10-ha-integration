@@ -25,9 +25,16 @@ Settings → Devices & Services → Add Integration → "Warp 10".
 
 You will be asked for:
 
-- **Warp 10 URL** — e.g. `http://localhost:8080` or the address of the
-  [warp10-ha-addon](https://github.com/YOUR_GITHUB_USERNAME/warp10-ha-addon)
-  if you're running Warp 10 as a Home Assistant add-on.
+- **Warp 10 URL** — reachable from Home Assistant Core's own container, which
+  is *not* the same network namespace as `localhost` on the host or on an
+  add-on. If you're running Warp 10 via
+  [warp10-ha-addon](https://github.com/nsteinmetz/warp10-ha-addon), use
+  `http://homeassistant.local:8080` (Supervisor forwards mDNS into its
+  internal DNS, so `.local` names resolve from inside Core too) or the host
+  machine's LAN IP, e.g. `http://192.168.1.50:8080` — **not**
+  `http://localhost:8080`, which only reaches Core's own container. If Warp10
+  runs directly on the same host as a non-containerized Home Assistant Core
+  install, `localhost` is fine.
 - **Write token** — a Warp 10 WRITE token for the application/producer
   you want the data attributed to.
 

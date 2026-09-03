@@ -12,6 +12,7 @@ CONF_INGEST_NUMERIC = "ingest_numeric"
 CONF_INGEST_BOOLEAN = "ingest_boolean"
 CONF_INGEST_STRING = "ingest_string"
 
+DEFAULT_URL = "http://homeassistant.local:8080"
 DEFAULT_CLASS_PREFIX = "homeassistant"
 DEFAULT_BATCH_INTERVAL = 5  # seconds between flushes to Warp10
 DEFAULT_TIMEOUT = 10  # seconds, aiohttp request timeout
