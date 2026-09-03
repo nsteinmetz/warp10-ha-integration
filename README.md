@@ -1,8 +1,10 @@
 # Warp 10 integration for Home Assistant
 
-Streams numeric sensor state changes from Home Assistant into a
+Streams entity state changes from Home Assistant into a
 [Warp 10](https://www.warp10.io/) time series platform, in raw form
-(one Geo Time Series point per state change, no aggregation).
+(one Geo Time Series point per state change, no aggregation). Numeric,
+boolean, and free-text states are all forwarded, each as Warp10's matching
+native GTS value type.
 
 ## Installation
 
@@ -34,19 +36,30 @@ Options (gear icon on the integration card) let you set:
 - entity include/exclude lists (comma-separated `entity_id`s)
 - the GTS class name prefix (default `homeassistant`)
 - the batch flush interval in seconds (default 5)
+- whether to ingest numeric, boolean, and/or free-text states — each is its
+  own on/off toggle, all enabled by default
 
 ## How data is stored
 
-Each numeric state change becomes one Warp10 GTS point:
+Each forwarded state change becomes one Warp10 GTS point:
 
 ```
 <timestamp_micros>// homeassistant.<entity_id>{entity_id=<entity_id>} <value>
 ```
 
-Non-numeric states (`on`/`off`, strings, `unknown`, `unavailable`) are skipped.
-Points are buffered and flushed in a single batched HTTP call every
-`batch_interval` seconds, using each state's own `last_updated` timestamp —
-not the time of the flush.
+`<value>` depends on the state's type:
+
+- **Numeric** states (e.g. sensor readings) → a Warp10 LONG/DOUBLE, e.g. `21.5`.
+- **Boolean** states — `on`/`off` (binary_sensor, switch, input_boolean, ...)
+  and `true`/`false`, case-insensitive — → Warp10's native BOOLEAN literal,
+  `T` or `F`.
+- Everything else (free text) → a Warp10 STRING, percent-encoded and
+  single-quoted, e.g. `'hello%20world'`.
+
+`unknown`, `unavailable`, and empty states are always skipped, regardless of
+the toggles above. Points are buffered and flushed in a single batched HTTP
+call every `batch_interval` seconds, using each state's own `last_updated`
+timestamp — not the time of the flush.
 
 ## Diagnostics
 
