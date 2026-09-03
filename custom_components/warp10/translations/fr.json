@@ -1,0 +1,38 @@
+{
+  "config": {
+    "step": {
+      "user": {
+        "title": "Connexion à Warp 10",
+        "description": "Entrez l'URL de votre instance Warp 10 et un jeton d'écriture.",
+        "data": {
+          "url": "URL Warp 10",
+          "write_token": "Jeton d'écriture"
+        }
+      }
+    },
+    "error": {
+      "cannot_connect": "Échec de la connexion à l'instance Warp 10.",
+      "invalid_auth": "Le jeton d'écriture a été rejeté.",
+      "unknown": "Erreur inattendue."
+    },
+    "abort": {
+      "already_configured": "Cette instance Warp 10 est déjà configurée."
+    }
+  },
+  "options": {
+    "step": {
+      "init": {
+        "title": "Options Warp 10",
+        "data": {
+          "include_entities": "Entités à inclure (séparées par des virgules, vide = toutes)",
+          "exclude_entities": "Entités à exclure (séparées par des virgules)",
+          "class_prefix": "Préfixe du nom de classe GTS",
+          "batch_interval": "Intervalle d'envoi par lot (secondes)",
+          "ingest_numeric": "Ingérer les états numériques",
+          "ingest_boolean": "Ingérer les états booléens (on/off, true/false)",
+          "ingest_string": "Ingérer les états en texte libre"
+        }
+      }
+    }
+  }
+}
