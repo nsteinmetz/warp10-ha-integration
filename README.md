@@ -51,8 +51,15 @@ Options (gear icon on the integration card) let you set:
 Each forwarded state change becomes one Warp10 GTS point:
 
 ```
-<timestamp_micros>// homeassistant.<entity_id>{entity_id=<entity_id>} <value>
+<timestamp_micros>// homeassistant.<entity_id>{entity_id=<entity_id>,area_id=<area_id>,device_class=<device_class>} <value>
 ```
+
+`entity_id` is always present. `area_id` and `device_class` are added only
+when available — `area_id` from the entity's (or its device's) assigned area
+in the HA area registry, `device_class` from the state's own `device_class`
+attribute. Both use stable identifiers rather than display names/labels on
+purpose: renaming an area in the HA UI would otherwise change the label
+value and fragment the GTS's identity in Warp10 across the rename.
 
 `<value>` depends on the state's type:
 

@@ -12,8 +12,10 @@ from datetime import timedelta
 from urllib.parse import quote as urlquote
 
 from homeassistant.config_entries import ConfigEntry
-from homeassistant.const import EVENT_STATE_CHANGED, Platform
+from homeassistant.const import ATTR_DEVICE_CLASS, EVENT_STATE_CHANGED, Platform
 from homeassistant.core import Event, HomeAssistant, callback
+from homeassistant.helpers import device_registry as dr
+from homeassistant.helpers import entity_registry as er
 from homeassistant.helpers.aiohttp_client import async_get_clientsession
 from homeassistant.helpers.event import async_track_time_interval
 
@@ -89,6 +91,24 @@ class Warp10Client:
             return False
         return True
 
+    def _area_id_for_entity(self, entity_id: str) -> str | None:
+        """Return the entity's area_id, direct or inherited from its device.
+
+        area_id (a stable slug) is used rather than the area's display name:
+        renaming an area in the UI would otherwise change the label value and
+        fragment the GTS's identity in Warp10 across the rename.
+        """
+        entity_entry = er.async_get(self.hass).async_get(entity_id)
+        if entity_entry is None:
+            return None
+        if entity_entry.area_id:
+            return entity_entry.area_id
+        if entity_entry.device_id:
+            device_entry = dr.async_get(self.hass).async_get(entity_entry.device_id)
+            if device_entry:
+                return device_entry.area_id
+        return None
+
     @staticmethod
     def _escape_label_value(value: str) -> str:
         """Escape a label value per the Warp10 GTS input format.
@@ -141,8 +161,19 @@ class Warp10Client:
 
         ts_micros = int(new_state.last_updated.timestamp() * 1_000_000)
         class_name = f"{self.class_prefix}.{entity_id}"
-        label = self._escape_label_value(entity_id)
-        line = f"{ts_micros}// {class_name}{{entity_id={label}}} {value}"
+
+        labels = {"entity_id": entity_id}
+        area_id = self._area_id_for_entity(entity_id)
+        if area_id:
+            labels["area_id"] = area_id
+        device_class = new_state.attributes.get(ATTR_DEVICE_CLASS)
+        if device_class:
+            labels["device_class"] = str(device_class)
+        label_str = ",".join(
+            f"{k}={self._escape_label_value(v)}" for k, v in labels.items()
+        )
+
+        line = f"{ts_micros}// {class_name}{{{label_str}}} {value}"
         self._buffer.append(line)
 
     async def async_flush(self, _now=None) -> None:
