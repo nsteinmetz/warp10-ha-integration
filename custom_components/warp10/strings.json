@@ -8,6 +8,14 @@
           "url": "Warp 10 URL",
           "write_token": "Write token"
         }
+      },
+      "reconfigure": {
+        "title": "Reconfigure Warp 10",
+        "description": "Update the URL and/or write token for this Warp 10 instance.",
+        "data": {
+          "url": "Warp 10 URL",
+          "write_token": "Write token"
+        }
       }
     },
     "error": {
@@ -16,7 +24,8 @@
       "unknown": "Unexpected error."
     },
     "abort": {
-      "already_configured": "This Warp 10 instance is already configured."
+      "already_configured": "This Warp 10 instance is already configured.",
+      "reconfigure_successful": "Reconfiguration was successful."
     }
   },
   "options": {

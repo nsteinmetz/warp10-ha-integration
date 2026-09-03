@@ -38,6 +38,10 @@ You will be asked for:
 - **Write token** — a Warp 10 WRITE token for the application/producer
   you want the data attributed to.
 
+To change the URL or write token later, use **Reconfigure** on the
+integration card (⋮ menu, or the card's own menu) — not the gear/Options
+icon, which only covers the settings below.
+
 Options (gear icon on the integration card) let you set:
 
 - entity include/exclude lists (comma-separated `entity_id`s)

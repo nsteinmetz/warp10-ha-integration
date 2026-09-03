@@ -34,12 +34,20 @@ from .const import (
 
 _LOGGER = logging.getLogger(__name__)
 
-STEP_USER_SCHEMA = vol.Schema(
-    {
-        vol.Required(CONF_URL, default=DEFAULT_URL): str,
-        vol.Required(CONF_WRITE_TOKEN): str,
-    }
-)
+
+def _url_token_schema(defaults: dict[str, Any]) -> vol.Schema:
+    """Build the URL/write-token schema, pre-filled from `defaults`."""
+    return vol.Schema(
+        {
+            vol.Required(CONF_URL, default=defaults.get(CONF_URL, DEFAULT_URL)): str,
+            vol.Required(
+                CONF_WRITE_TOKEN, default=defaults.get(CONF_WRITE_TOKEN, "")
+            ): str,
+        }
+    )
+
+
+STEP_USER_SCHEMA = _url_token_schema({})
 
 
 class InvalidAuth(Exception):
@@ -90,6 +98,47 @@ class Warp10ConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
 
         return self.async_show_form(
             step_id="user", data_schema=STEP_USER_SCHEMA, errors=errors
+        )
+
+    async def async_step_reconfigure(
+        self, user_input: dict[str, Any] | None = None
+    ) -> FlowResult:
+        """Let the user change the URL and/or write token of an existing entry.
+
+        Without this step, Home Assistant's generic "Reconfigure" UI action
+        (always shown for any config entry) has no handler to call and the
+        flow errors out.
+        """
+        errors: dict[str, str] = {}
+        reconfigure_entry = self._get_reconfigure_entry()
+
+        if user_input is not None:
+            try:
+                await _validate_connection(
+                    self.hass, user_input[CONF_URL], user_input[CONF_WRITE_TOKEN]
+                )
+            except InvalidAuth:
+                errors["base"] = "invalid_auth"
+            except aiohttp.ClientError:
+                errors["base"] = "cannot_connect"
+            except Exception:  # noqa: BLE001
+                _LOGGER.exception("Unexpected exception during Warp10 reconfigure")
+                errors["base"] = "unknown"
+            else:
+                await self.async_set_unique_id(user_input[CONF_URL])
+                # Only collide-check against other entries if the URL actually
+                # changed — resubmitting the same URL must not abort against
+                # this entry's own, unchanged unique_id.
+                if self.unique_id != reconfigure_entry.unique_id:
+                    self._abort_if_unique_id_configured()
+                return self.async_update_reload_and_abort(
+                    reconfigure_entry, data=user_input
+                )
+
+        return self.async_show_form(
+            step_id="reconfigure",
+            data_schema=_url_token_schema(reconfigure_entry.data),
+            errors=errors,
         )
 
     @staticmethod

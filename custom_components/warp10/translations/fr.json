@@ -8,6 +8,14 @@
           "url": "URL Warp 10",
           "write_token": "Jeton d'écriture"
         }
+      },
+      "reconfigure": {
+        "title": "Reconfigurer Warp 10",
+        "description": "Modifiez l'URL et/ou le jeton d'écriture de cette instance Warp 10.",
+        "data": {
+          "url": "URL Warp 10",
+          "write_token": "Jeton d'écriture"
+        }
       }
     },
     "error": {
@@ -16,7 +24,8 @@
       "unknown": "Erreur inattendue."
     },
     "abort": {
-      "already_configured": "Cette instance Warp 10 est déjà configurée."
+      "already_configured": "Cette instance Warp 10 est déjà configurée.",
+      "reconfigure_successful": "La reconfiguration a réussi."
     }
   },
   "options": {
