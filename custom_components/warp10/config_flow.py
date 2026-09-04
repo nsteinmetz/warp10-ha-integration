@@ -146,15 +146,18 @@ class Warp10ConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
         config_entry: config_entries.ConfigEntry,
     ) -> Warp10OptionsFlow:
         """Return the options flow for this handler."""
-        return Warp10OptionsFlow(config_entry)
+        return Warp10OptionsFlow()
 
 
 class Warp10OptionsFlow(config_entries.OptionsFlow):
-    """Handle options: entity filtering, class prefix, batch interval."""
+    """Handle options: entity filtering, class prefix, batch interval.
 
-    def __init__(self, config_entry: config_entries.ConfigEntry) -> None:
-        """Initialize the options flow."""
-        self.config_entry = config_entry
+    No __init__/config_entry assignment here: OptionsFlow.config_entry is a
+    read-only property on the base class (resolved from self.hass/self.handler,
+    populated by the flow manager after construction) — manually assigning to
+    it, as this class used to do, raises AttributeError as soon as HA tries to
+    construct the flow.
+    """
 
     async def async_step_init(
         self, user_input: dict[str, Any] | None = None
